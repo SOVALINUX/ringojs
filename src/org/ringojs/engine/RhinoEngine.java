@@ -314,7 +314,7 @@ public class RhinoEngine implements ScopeProvider {
                 if (worker == null) {
                     worker = scopeWorker;
                 } else if (worker != scopeWorker) {
-                    throw new IllegalStateException(String.format("Current thread worker %s differs from scope worker %s, scope name %s", worker, scopeWorker, ((ModuleScope) scriptable).getSource().getPath()));
+                    //throw new IllegalStateException(String.format("Current thread worker %s differs from scope worker %s, scope name %s", worker, scopeWorker, ((ModuleScope) scriptable).getSource().getPath()));
                 }
                 break;
             }
