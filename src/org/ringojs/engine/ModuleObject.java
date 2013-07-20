@@ -106,38 +106,3 @@ public class ModuleObject extends ScriptableObject {
         return "ModuleObject";
     }
 }
-
-/**
- * A wrapper around a singleton id and value.
- */
-class Singleton {
-
-    final String key;
-    boolean evaluated = false;
-    Object value = Undefined.instance;
-
-    Singleton(Trackable source, String id) {
-        this.key = source.getPath() + ":" + id;
-    }
-
-    synchronized Object getValue(Function function, Scriptable scope,
-                                 ModuleObject obj) {
-        if (!evaluated && function != null) {
-            Context cx = Context.getCurrentContext();
-            value = function.call(cx, scope, obj, ScriptRuntime.emptyArgs);
-            evaluated = true; // only if evaluation was successful
-        }
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Singleton
-                && key.equals(((Singleton) obj).key);
-    }
-
-    @Override
-    public int hashCode() {
-        return key.hashCode();
-    }
-}
