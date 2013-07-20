@@ -58,7 +58,7 @@ public class RhinoEngine implements ScopeProvider {
     private List<String> commandLineArgs;
     private Map<Trackable, ReloadableScript> compiledScripts, interpretedScripts;
     private final Map<Singleton, Singleton> singletons;
-    private AppClassLoader loader = new AppClassLoader();
+    private RingoClassLoader loader;
     private WrapFactory wrapFactory;
     private Set<Class> hostClasses;
     private ModuleLoader[] loaders;
@@ -83,18 +83,38 @@ public class RhinoEngine implements ScopeProvider {
      *
      * @param config the configuration used to initialize the engine.
      * @param globals an optional map of global properties
+     *
      * @throws Exception if the engine can't be created
      */
     public RhinoEngine(RingoConfig config, Map<String, Object> globals)
             throws Exception {
+        this(config, globals, new RingoContextFactory(null, config), new RingoClassLoader(new URL[0], RhinoEngine.class.getClassLoader()));
+    }
+    
+    /**
+     * Create a RhinoEngine with the given configuration. If <code>globals</code>
+     * is not null, its contents are added as properties on the global object.
+     * Also contextFactory and classLoader can be configured for more flexibility
+     *
+     * @param config the configuration used to initialize the engine.
+     * @param globals an optional map of global properties
+     * @param contextFactory the context factory that will be used in engine
+     * @param classLoader the classLoader for the extended class loading
+     
+     * @throws Exception if the engine can't be created
+     */
+    public RhinoEngine(RingoConfig config, Map<String, Object> globals, RingoContextFactory contextFactory, RingoClassLoader classLoader)
+            throws Exception {        
         this.config = config;
+        this.loader = classLoader;
         workers = new LinkedBlockingDeque<RingoWorker>();
         currentWorker = new ThreadLocal<RingoWorker>();
         mainWorker = new RingoWorker(this);
         compiledScripts = new ConcurrentHashMap<Trackable, ReloadableScript>();
         interpretedScripts = new ConcurrentHashMap<Trackable, ReloadableScript>();
         singletons = new HashMap<Singleton, Singleton>();
-        contextFactory = new RingoContextFactory(this, config);
+        this.contextFactory = contextFactory;
+        this.contextFactory.setEngine(this);
         repositories = config.getRepositories();
         wrapFactory = config.getWrapFactory();
 
@@ -294,7 +314,7 @@ public class RhinoEngine implements ScopeProvider {
                 if (worker == null) {
                     worker = scopeWorker;
                 } else if (worker != scopeWorker) {
-                    throw new IllegalStateException("Current thread worker differs from scope worker");
+                    throw new IllegalStateException(String.format("Current thread worker %s differs from scope worker %s, scope name %s", worker, scopeWorker, ((ModuleScope) scriptable).getSource().getPath()));
                 }
                 break;
             }
@@ -1025,25 +1045,3 @@ public class RhinoEngine implements ScopeProvider {
     }
 
 }
-
-class AppClassLoader extends RingoClassLoader {
-
-    HashSet<URL> urls = new HashSet<URL>();
-
-    public AppClassLoader() {
-        super(new URL[0], RhinoEngine.class.getClassLoader());
-    }
-
-    /**
-     * Overrides addURL to make it accessable to RingoGlobal.addToClasspath()
-     * @param url the url to add to the classpath
-     */
-    protected synchronized void addURL(URL url) {
-        if (!urls.contains(url)) {
-            urls.add(url);
-            super.addURL(url);
-        }
-    }
-}
-
-

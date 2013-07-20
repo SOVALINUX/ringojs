@@ -219,7 +219,7 @@ public class ReloadableScript {
                                          RingoWorker worker)
             throws IOException {
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Loading module: " + moduleName);
+            log.fine("Loading module: '" + moduleName + "' by worker = " + worker);
         }
         if (engine.getConfig().isVerbose()) {
             System.err.println("Loading module: " + moduleName);

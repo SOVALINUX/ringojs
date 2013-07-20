@@ -54,6 +54,10 @@ public class RingoClassLoader extends URLClassLoader {
             }
         }
     }
+	
+	public synchronized void addURL(URL url) {
+		super.addURL(url);
+	}
 
     public RingoClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);

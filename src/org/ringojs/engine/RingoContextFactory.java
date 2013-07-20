@@ -18,7 +18,7 @@ import java.security.PrivilegedAction;
 
 public class RingoContextFactory extends ContextFactory {
 
-    RhinoEngine engine;
+    protected RhinoEngine engine;
 
     int languageVersion = Context.VERSION_1_8;
     boolean strictMode = false;
@@ -138,5 +138,8 @@ public class RingoContextFactory extends ContextFactory {
     public void setGeneratingDebug(boolean generatingDebug) {
         this.generatingDebug = generatingDebug;
     }
-
+	
+    public void setEngine(RhinoEngine engine) {
+        this.engine = engine;
+    }
 }
