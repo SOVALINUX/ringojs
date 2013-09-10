@@ -288,6 +288,15 @@ public final class RingoWorker {
     protected void registerModule(Resource resource, Scriptable module) {
         checkedModules.put(resource, module);
     }
+	
+	/**
+     * Removes resource to prevent memory leaks.
+     * @param resource a resource
+     */
+    public void clearModuleCache(Resource resource) {
+        checkedModules.remove(resource);
+        modules.remove(resource);
+    }
 
     /**
      * Evaluate a script within a given scope.

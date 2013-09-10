@@ -257,6 +257,7 @@ public class RhinoEngine implements ScopeProvider {
             Resource res = new StringResource("<expr>", expr, 1);
             ReloadableScript script = new ReloadableScript(res, this);
             retval = mainWorker.evaluateScript(cx, script, scope);
+			mainWorker.clearModuleCache(script.resource);
             return retval instanceof Wrapper ? ((Wrapper) retval).unwrap() : retval;
         } finally {
             Context.exit();
