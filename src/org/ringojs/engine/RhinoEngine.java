@@ -159,6 +159,8 @@ public class RhinoEngine implements ScopeProvider {
             if (debugger != null) {
                 debugger.setBreak();
             }
+            /*
+            Not needed in our engine
             try {
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     public void run() {
@@ -168,6 +170,7 @@ public class RhinoEngine implements ScopeProvider {
             } catch (java.security.AccessControlException e) {
                 log.log(Level.WARNING, "Could not register shutdown hook due to security exception", e);
             }
+            */
         } finally {
             Context.exit();
         }
@@ -358,7 +361,7 @@ public class RhinoEngine implements ScopeProvider {
         }
     }
 
-    synchronized void shutdown() {
+    public synchronized void shutdown() {
         List<Callback> hooks = shutdownHooks;
         if (hooks != null) {
             for (Callback callback: hooks) {
